@@ -2,10 +2,8 @@ suppressPackageStartupMessages({
   library(readr); library(dplyr); library(stringr); library(tibble); library(lubridate)
 })
 
-pasta_base  <- "~/dupla_checagem"
-pasta_2024  <- file.path(pasta_base, "ciclo2024_202508")
-pasta_2025  <- file.path(pasta_base, "ciclo2025_202508")
-pasta_saida <- file.path(pasta_base, "SAIDA"); dir.create(pasta_saida, FALSE, TRUE)
+pasta_2024  <- paste0(dados_dir, "/raw/folhas/ciclo2024_202508")
+pasta_2025  <- paste0(dados_dir, "/raw/folhas/ciclo2025_202508")
 
 # Exemplos com folhas de agosto/2-25. Substituir pelos nomes corretos.
 
@@ -78,5 +76,5 @@ detalhes_todos <- purrr::pmap_dfr(
 
 
 # Exporta todos os arquivos de folha compilados em um dataframe, com tipo de folha
-data.table::fwrite(detalhes_todos, file.path(pasta_saida, "detalhes_todos.csv.gz"))
-arrow::write_parquet(detalhes_todos, file.path(pasta_saida, "detalhes_todos.parquet"), compression = "zstd")
+data.table::fwrite(detalhes_todos, paste0(dados_dir, "/intermediary/folhas_detalhes_todos.csv.gz"))
+arrow::write_parquet(detalhes_todos, paste0(dados_dir, "/intermediary/folhas_detalhes_todos.parquet"), compression = "zstd")
