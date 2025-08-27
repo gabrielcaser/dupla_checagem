@@ -18,6 +18,11 @@ library(gargle)
 library(curl)
 library(jsonlite)
 library(progress)
+library(readr)
+library(dplyr)
+library(stringr)
+library(tibble)
+library(lubridate)
 
 # Dados para baixar (1 = Sim, 0 = Não)
 sgp              <- 0
@@ -25,5 +30,5 @@ cad_unico        <- 0
 folhas_pagamento <- 1
 
 # Rodando os scripts
-source("codigo/01-baixar.R") # Baixa Folhas de Pagamento, SGP e Cad Único
-#source("codigo/02-dupla-checagem-2.R")
+source("codigo/01-baixar.R") # Baixa Folhas de pagamento, SGP e Cad Único
+source("codigo/02-folhas.R") # Processa Folhas de pagamento e seleciona CPFs do mês
