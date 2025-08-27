@@ -1,9 +1,7 @@
-suppressPackageStartupMessages({
-  library(readr); library(dplyr); library(stringr); library(tibble); library(lubridate)
-})
+# Definindo os caminhos das pastas
 
-pasta_2024  <- paste0(dados_dir, "/raw/folhas/ciclo2024_202508")
-pasta_2025  <- paste0(dados_dir, "/raw/folhas/ciclo2025_202508")
+pasta_2024  <- paste0(dir_dados, "/raw/folhas_pagamento/agosto-2025/ciclo2024_202508")
+pasta_2025  <- paste0(dir_dados, "/raw/folhas_pagamento/agosto-2025/ciclo2025_202508")
 
 # Exemplos com folhas de agosto/2-25. Substituir pelos nomes corretos.
 
@@ -74,7 +72,9 @@ detalhes_todos <- purrr::pmap_dfr(
   mutate(cpf = stringr::str_pad(cpf, 11, pad = "0")) %>%
   filter(nchar(cpf) == 11)
 
+# Criando lista de cpfs
+lista_cpfs_folha <- detalhes_todos$cpf
 
 # Exporta todos os arquivos de folha compilados em um dataframe, com tipo de folha
-data.table::fwrite(detalhes_todos, paste0(dados_dir, "/intermediary/folhas_detalhes_todos.csv.gz"))
-arrow::write_parquet(detalhes_todos, paste0(dados_dir, "/intermediary/folhas_detalhes_todos.parquet"), compression = "zstd")
+data.table::fwrite(detalhes_todos, paste0(dir_dados, "/intermediary/folhas_detalhes_todos.csv.gz"))
+arrow::write_parquet(detalhes_todos, paste0(dir_dados, "/intermediary/folhas_detalhes_todos.parquet"), compression = "zstd")

@@ -132,17 +132,17 @@ baixar_prefixo <- function(prefixo, destino, sobrescrever = TRUE, access_token) 
 # Descomente os que desejar rodar:
 # 4.1) sgp/
 if (sgp == 1) {
-    res_sgp <- baixar_prefixo("", destino = paste0(dir_dados,"/sgp"), sobrescrever = TRUE, access_token = access_token)
+    res_sgp <- baixar_prefixo("/sgp", destino = paste0(dir_dados,"/sgp"), sobrescrever = TRUE, access_token = access_token)
 }
 
 # 4.2) cad_unico/
 if (cad_unico == 1) {
-    res_cad <- baixar_prefixo("", destino = paste0(dir_dados,"/cad_unico"), sobrescrever = TRUE, access_token = access_token)
+    res_cad <- baixar_prefixo("/cad_unico", destino = paste0(dir_dados,"/cad_unico"), sobrescrever = TRUE, access_token = access_token)
 }
 
 # 4.3) folhas de pagamento/
-if (folhas == 1) {
-    res_folhas <- baixar_prefixo("", destino = paste0(dir_dados,"/folhas_de_pagamento"), sobrescrever = TRUE, access_token = access_token)
+if (folhas_pagamento == 1) {
+    res_folhas <- baixar_prefixo("/folhas_pagamento", destino = paste0(dir_dados,"/folhas_de_pagamento"), sobrescrever = TRUE, access_token = access_token)
 }
 
 cat("\nTodos os downloads finalizados.\n")

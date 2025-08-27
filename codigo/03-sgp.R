@@ -1,12 +1,10 @@
-suppressPackageStartupMessages({ library(data.table); library(dplyr); library(stringr) })
-
-arquivo_sgp <- file.path(pasta_base, "SGP_AGO_25.csv")  # ajustar para o nome correto
-sgp_bruto <- data.table::fread(arquivo_sgp, showProgress = TRUE)
-
-# Processamento do CPF com remoção de pontos e manutenção dele como "character", pra manter 0 a esquerda no CPF
-
-sgp <- sgp_bruto %>%
-  mutate(cpf = str_pad(str_replace_all(as.character(nu_cpf), "\\D",""), 11, pad = "0"))
+# Carregando dados apenas para CPFs presentes em lista_cpfs_folha
+sgp <- data.table::fread(
+    paste0(dados_dir, "SGP_AGO_25.csv"),
+    showProgress = TRUE
+) %>%
+    mutate(cpf = str_pad(str_replace_all(as.character(nu_cpf), "\\D",""), 11, pad = "0")) %>%
+    filter(cpf %in% lista_cpfs_folha)
 
 # Criação de flag pra CPF no SGP
 sgp_cpfs <- sgp %>% mutate(indicador_sgp = 1L)
