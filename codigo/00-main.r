@@ -7,7 +7,7 @@ gc()
 
 # Diretórios
 dir_base  <- "C:/Users/gabri/Documents/Github/MEC/dupla_checagem"
-dir_dados <- "C:/Users/gabri/OneDrive - MEC-Ministério da Educação/dupla_checagem"
+dir_dados <- "C:/Users/gabri/OneDrive - MEC-Ministério da Educação/dupla_checagem/dados"
 
 # Definindo o ambiente renv (define e instala localmente os pacotes nas versões que foram utilizadas)
 ##install.packages("renv")
@@ -30,5 +30,5 @@ cad_unico        <- 0
 folhas_pagamento <- 1
 
 # Rodando os scripts
-source("codigo/01-baixar.R") # Baixa Folhas de pagamento, SGP e Cad Único
+#source("codigo/01-baixar.R") # Baixa Folhas de pagamento, SGP e Cad Único
 source("codigo/02-folhas.R") # Processa Folhas de pagamento e seleciona CPFs do mês
