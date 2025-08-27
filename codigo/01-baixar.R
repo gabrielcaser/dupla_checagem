@@ -6,27 +6,11 @@
 # ATENÇÃO: Altere caminhos marcados como "ALTERAR SE NECESSÁRIO"
 ############################################################
 
-# 0) Pacotes --------------------------------------------------------------
-pkgs <- c("gargle", "curl", "jsonlite", "progress")
-instalar <- pkgs[!pkgs %in% rownames(installed.packages())]
-if (length(instalar)) install.packages(instalar, repos = "https://cloud.r-project.org")
-library(gargle)
-library(curl)
-library(jsonlite)
-library(progress)
-
 # 1) Configurações --------------------------------------------------------
 bucket <- "pe-de-meia"
 
 # >>>>>> ALTERAR SE NECESSÁRIO (CAMINHO DO .JSON DA SERVICE ACCOUNT) <<<<<<
-sa_json <- "C:\\SUA_PASTA_COM_A_CHAVE\\rwilliammelo-5d1e9f4671a5.json"
-
-# >>>>>> ALTERAR SE NECESSÁRIO (PASTA LOCAL DE DOWNLOAD) <<<<<<
-destino_base <- "C:\\SUA_PASTA_DE_DOWNLOADS"
-dest_sgp     <- file.path(destino_base, "sgp")
-dest_cad     <- file.path(destino_base, "cad_unico")
-dest_folhas  <- file.path(destino_base, "folhas de pagamento")
-
+sa_json    <- paste0(dir_base, "/input/rwilliammelo-5d1e9f4671a5.json")
 scope_read <- "https://www.googleapis.com/auth/devstorage.read_only"
 
 # 2) Autenticação (gera access_token) ------------------------------------
@@ -146,14 +130,19 @@ baixar_prefixo <- function(prefixo, destino, sobrescrever = TRUE, access_token) 
 
 # 4) Executar presets -----------------------------------------------------
 # Descomente os que desejar rodar:
-
 # 4.1) sgp/
-res_sgp <- baixar_prefixo("sgp/", destino = dest_sgp, sobrescrever = TRUE, access_token = access_token)
+if (sgp == 1) {
+    res_sgp <- baixar_prefixo("", destino = paste0(dir_dados,"/sgp"), sobrescrever = TRUE, access_token = access_token)
+}
 
 # 4.2) cad_unico/
-# res_cad <- baixar_prefixo("cad_unico/", destino = dest_cad, sobrescrever = TRUE, access_token = access_token)
+if (cad_unico == 1) {
+    res_cad <- baixar_prefixo("", destino = paste0(dir_dados,"/cad_unico"), sobrescrever = TRUE, access_token = access_token)
+}
 
 # 4.3) folhas de pagamento/
-# res_folhas <- baixar_prefixo("folhas de pagamento/", destino = dest_folhas, sobrescrever = TRUE, access_token = access_token)
+if (folhas == 1) {
+    res_folhas <- baixar_prefixo("", destino = paste0(dir_dados,"/folhas_de_pagamento"), sobrescrever = TRUE, access_token = access_token)
+}
 
 cat("\nTodos os downloads finalizados.\n")
