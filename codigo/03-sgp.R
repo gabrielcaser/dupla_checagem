@@ -1,31 +1,50 @@
-# Carregando dados apenas para CPFs presentes em lista_cpfs_folha
-sgp <- data.table::fread(
-    paste0(dados_dir, "SGP_AGO_25.csv"),
-    showProgress = TRUE
-) %>%
-    mutate(cpf = str_pad(str_replace_all(as.character(nu_cpf), "\\D",""), 11, pad = "0")) %>%
-    filter(cpf %in% lista_cpfs_folha)
+start <- Sys.time()
 
-# Criação de flag pra CPF no SGP
-sgp_cpfs <- sgp %>% mutate(indicador_sgp = 1L)
+# Criando Data Table da Folha
+conexao_folha <- arrow::open_dataset(paste0(dir_dados, "/intermediary/folhas_detalhes_todos.parquet"))
 
-# Junção do SGP com as folhas
-folhas_com_indicador_sgp <- detalhes_todos %>%
-  left_join(sgp_cpfs, by = "cpf") %>%
-  mutate(indicador_sgp = coalesce(indicador_sgp, 0L))
+dt_folha <- conexao_folha %>%
+  #head(10) %>%
+  data.table::as.data.table()
 
-# CPFs da folha dentro e fora do SGP
-na_folha_e_no_sgp      <- folhas_com_indicador_sgp %>% filter(indicador_sgp == 1L)
-na_folha_e_fora_do_sgp <- folhas_com_indicador_sgp %>% filter(indicador_sgp == 0L)
+rm(conexao_folha)
 
-# Resumos do tabelão "folha+sgp"
-resumo_sgp_geral <- folhas_com_indicador_sgp %>%
-  summarise(linhas_total = n(), cpfs_unicos_total = n_distinct(cpf),
-            linhas_no_sgp = sum(indicador_sgp==1L), linhas_fora_sgp = sum(indicador_sgp==0L),
-            cpfs_no_sgp = n_distinct(cpf[indicador_sgp==1L]),
-            cpfs_fora_sgp = n_distinct(cpf[indicador_sgp==0L]))
+# Criando Data Table SGP apenas com CPFs que estão na Folha
+conexao_sgp <- open_dataset(
+  sources = paste0(dir_dados, "/raw/sgp/SGP_AGO_FELIPE.csv"),
+  format = "csv",
+  delimiter = ";",
+  col_names = TRUE,
+  col_types = schema(nu_cpf = string())
+)
 
-# Exportar tabela de CPFs das folhas que não estão no SGP para a pasta SAIDA e tabela com resumos também
-data.table::fwrite(na_folha_e_fora_do_sgp %>% distinct(cpf),
-                   file.path(pasta_saida, "cpfs_fora_sgp_unicos.csv"))
-data.table::fwrite(resumo_sgp_geral, file.path(pasta_saida, "resumo_sgp_geral.csv"))
+dt_sgp <- conexao_sgp %>%
+  mutate(cpf = as.character(nu_cpf)) %>% #transforma a coluna 'nu_cpf' em texto, remove caracteres não numéricos, e preenche à esquerda com zeros até completar 11 dígitos, criando a nova coluna 'cpf'
+  filter(cpf %in% unique(dt_folha$cpf)) %>%
+  data.table::as.data.table()
+
+rm(conexao_sgp)
+
+# Número de CPFs da folha atual que não estão no SGP
+cpfs_fora_sgp   <- dt_folha[!cpf %in% unique(dt_sgp$cpf), .(cpf)]
+
+n_cpfs_fora_sgp           <- nrow(cpfs_fora_sgp)
+n_cpfs_dent_sgp           <- nrow(dt_folha[cpf %in% unique(dt_sgp$cpf), ])
+n_cpfs_dent_sgp_repeticao <- nrow(dt_sgp)
+
+# Relatório
+print("Número de CPFs da folha atual que não estão no SGP:")
+print(n_cpfs_fora_sgp)
+print("Número de CPFs da folha atual que estão no SGP:")
+print(n_cpfs_dent_sgp)
+print("Número de vezes em que CPFs da folha atual aparecem no SGP (com repetição):")
+print(n_cpfs_dent_sgp_repeticao)
+
+# Tempo de execução
+end <- Sys.time()
+print(end - start)
+
+# Apagando itens desnecessários da memória
+rm(dt_folha, dt_sgp, start, end)
+
+# Fim do script

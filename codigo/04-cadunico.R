@@ -1,5 +1,3 @@
-suppressPackageStartupMessages({ library(readr); library(dplyr); library(stringr) })
-
 # Arquivo da tabela pessoa do CadUnico - caminho identificado pelo padrão dos nomes dos arquivos tal como vem do MDS. Se necessário, ajustar ou passar caminho direto na função read_delim() ou equivalente. 
 
 arquivo_cad_pessoa <- list.files(pasta_base, pattern="^ARQ_PESSOA_.*\\.csv$", full.names = TRUE)[1]
@@ -21,7 +19,8 @@ cad_pessoa <- readr::read_delim(
     data_nasc_cad  = DT_NASC_PESSOA,
     ID_FAMILIA     = CO_FAMILIAR_FAM
   ) %>%
-  distinct(cpf, .keep_all = TRUE)
+  distinct(cpf, .keep_all = TRUE) %>% 
+  filter(filter(cpf %in% lista_cpfs_folha))
 
 # Flag dos CPFs no CadUnico
 
@@ -38,4 +37,4 @@ folhas_com_cad <- detalhes_todos %>%
 cpfs_fora_cad <- folhas_com_cad %>% filter(indicador_cad == 0L) %>% select(cpf)
 
 # Exportar esses CPFs fora do Cad para a pasta SAIDA
-data.table::fwrite(cpfs_fora_cad, file.path(pasta_saida, "cpfs_fora_cad_unicos.csv"))
+data.table::fwrite(cpfs_fora_cad, paste0(dados_dir, "dados/final/cpfs_fora_cad_unicos.csv"))
