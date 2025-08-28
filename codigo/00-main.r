@@ -35,5 +35,5 @@ folhas_pagamento <- 1
 # Rodando os scripts
 #source("codigo/01-baixar.R") # Baixa Folhas de pagamento, SGP e Cad Único
 #source(paste0(dir_base,"/codigo/02-folhas.R"))   # Processa Folhas de pagamento e seleciona CPFs do mês
-source("codigo/03-sgp.R")      # Processa SGP e faz cruzamento com CPFs das folhas
+source(paste0(dir_base,"/codigo/03-sgp.R"))      # Processa SGP e faz cruzamento com CPFs das folhas
 #source("codigo/04-cadunico.R") # Processa CadÚnico e faz cruzamento com CPFs das folhas

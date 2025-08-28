@@ -4,7 +4,7 @@ start <- Sys.time()
 conexao_folha <- arrow::open_dataset(paste0(dir_dados, "/intermediary/folhas_detalhes_todos.parquet"))
 
 dt_folha <- conexao_folha %>%
-  #head(10) %>%
+  #head(10) %>% # para testes
   data.table::as.data.table()
 
 rm(conexao_folha)
@@ -26,19 +26,34 @@ dt_sgp <- conexao_sgp %>%
 rm(conexao_sgp)
 
 # Número de CPFs da folha atual que não estão no SGP
-cpfs_fora_sgp   <- dt_folha[!cpf %in% unique(dt_sgp$cpf), .(cpf)]
 
-n_cpfs_fora_sgp           <- nrow(cpfs_fora_sgp)
-n_cpfs_dent_sgp           <- nrow(dt_folha[cpf %in% unique(dt_sgp$cpf), ])
-n_cpfs_dent_sgp_repeticao <- nrow(dt_sgp)
+n_linhas_folha                  <- length(dt_folha$cpf)
+n_linhas_folha_dent_sgp         <- length(dt_folha[cpf %in% unique(dt_sgp$cpf), ]$cpf)
+n_linhas_folha_fora_sgp         <- length(dt_folha[!cpf %in% unique(dt_sgp$cpf), ]$cpf)
+
+cpfs_fora_sgp                   <- unique(dt_folha[!cpf %in% unique(dt_sgp$cpf), ]$cpf)
+
+n_cpfs_folha                    <- length(unique(dt_folha$cpf))
+n_cpfs_folha_dent_sgp           <- length(unique(dt_folha[cpf %in% unique(dt_sgp$cpf), ]$cpf))
+n_cpfs_folha_fora_sgp           <- length(unique(dt_folha[!cpf %in% unique(dt_sgp$cpf), ]$cpf))
+
 
 # Relatório
+print("Número de linhas da folha atual:") # Cada linha da folha equivale a uma ordem de pagamento
+print(n_linhas_folha)
+print("Número de linhas da folha atual que estão no SGP:")
+print(n_linhas_folha_dent_sgp)
+print("Número de linhas da folha atual que não estão no SGP:")
+print(n_linhas_folha_fora_sgp)
+
+print("Número de CPFs da folha atual:")
+print(n_cpfs_folha)
 print("Número de CPFs da folha atual que não estão no SGP:")
-print(n_cpfs_fora_sgp)
+print(n_cpfs_folha_fora_sgp)
 print("Número de CPFs da folha atual que estão no SGP:")
-print(n_cpfs_dent_sgp)
-print("Número de vezes em que CPFs da folha atual aparecem no SGP (com repetição):")
-print(n_cpfs_dent_sgp_repeticao)
+print(n_cpfs_folha_dent_sgp)
+
+
 
 # Tempo de execução
 end <- Sys.time()
